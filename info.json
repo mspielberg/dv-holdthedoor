@@ -1,0 +1,10 @@
+{
+  "Id": "DontShutTheDoor",
+  "DisplayName": "Don't Shut the Door!",
+  "Author": "Zeibach",
+  "Version": "0.1.0",
+  "AssemblyName": "DontShutTheDoor.dll",
+  "EntryMethod": "DvMod.DontShutTheDoor.Main.Load",
+  "HomePage": "https://www.nexusmods.com/derailvalley/mods/???",
+  "Repository": "https://raw.githubusercontent.com/mspielberg/dv-dontshutthedoor/master/resources/repository.json"
+}

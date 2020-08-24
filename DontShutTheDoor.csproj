@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <RootNamespace>DvMod.DontShutTheDoor</RootNamespace>
+    <InformationalVersion></InformationalVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony"/>
+    <Reference Include="Assembly-CSharp"/>
+    <Reference Include="UnityModManager"/>
+  </ItemGroup>
+</Project>
