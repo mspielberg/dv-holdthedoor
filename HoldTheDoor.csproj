@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>DvMod.HoldTheDoor</RootNamespace>
-    <InformationalVersion></InformationalVersion>
+    <InformationalVersion>v1.0.0</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
