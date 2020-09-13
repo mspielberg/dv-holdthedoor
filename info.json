@@ -2,9 +2,9 @@
   "Id": "HoldTheDoor",
   "DisplayName": "Hold the Door!",
   "Author": "Zeibach",
-  "Version": "0.1.0",
+  "Version": "1.0.1",
   "AssemblyName": "HoldTheDoor.dll",
   "EntryMethod": "DvMod.HoldTheDoor.Main.Load",
-  "HomePage": "https://www.nexusmods.com/derailvalley/mods/???",
+  "HomePage": "https://www.nexusmods.com/derailvalley/mods/207/",
   "Repository": "https://raw.githubusercontent.com/mspielberg/dv-holdthedoor/master/resources/repository.json"
 }
