@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="0Harmony"/>
     <Reference Include="Assembly-CSharp"/>
     <Reference Include="UnityEngine.CoreModule"/>
