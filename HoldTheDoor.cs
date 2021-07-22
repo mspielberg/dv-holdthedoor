@@ -1,6 +1,7 @@
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
-using System.Reflection.Emit;
+using System.Linq;
 using UnityModManagerNet;
 
 namespace DvMod.HoldTheDoor
@@ -8,12 +9,39 @@ namespace DvMod.HoldTheDoor
     public static class Main
     {
         public static UnityModManager.ModEntry mod;
+        public static Settings settings = new Settings();
 
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
             mod = modEntry;
+
+            try
+            {
+                var loaded = Settings.Load<Settings>(modEntry);
+                if (loaded.version == modEntry.Info.Version)
+                    settings = loaded;
+                else
+                    settings = new Settings();
+            }
+            catch
+            {
+                settings = new Settings();
+            }
+
+            modEntry.OnGUI = OnGui;
+            modEntry.OnSaveGUI = OnSaveGui;
             modEntry.OnToggle = OnToggle;
             return true;
+        }
+
+        private static void OnGui(UnityModManager.ModEntry modEntry)
+        {
+            settings.Draw(modEntry);
+        }
+
+        private static void OnSaveGui(UnityModManager.ModEntry modEntry)
+        {
+            settings.Save();
         }
 
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
@@ -30,31 +58,56 @@ namespace DvMod.HoldTheDoor
             return true;
         }
 
-        public static void DebugLog(string message)
+        public static void DebugLog(Func<string> message)
         {
-            mod.Logger.Log(message);
+            if (settings.enableLogging)
+                mod.Logger.Log(message());
         }
+    }
+
+    public class Settings : UnityModManager.ModSettings, IDrawable
+    {
+        [Draw("Max interiors", Min = 1)]
+        public int maxInteriors = 1;
+        [Draw("Enable logging")]
+        public bool enableLogging = false;
+        public readonly string? version = Main.mod?.Info.Version;
+
+        public void Save()
+        {
+            Save(this, Main.mod);
+        }
+
+        public void OnChange() { }
     }
 
     [HarmonyPatch(typeof(TrainCar), "OnPlayerCarChanged")]
     public static class OnPlayerCarChangedPatch
     {
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        private static List<TrainCar> carsWithLoadedInteriors = new List<TrainCar>();
+
+        public static bool Prefix(TrainCar __instance, TrainCar car)
         {
-            Main.DebugLog("Patching TrainCar.OnPlayerCarChanged");
-            List<CodeInstruction> insts = new List<CodeInstruction>(instructions);
-            Label endLabel = insts[insts.Count - 1].labels[0];
-            int i = insts.FindIndex(c => c.Calls(AccessTools.DeclaredMethod(typeof(TrainCar), "UnloadInterior")));
-            insts.InsertRange(i - 1, new List<CodeInstruction>() {
-                new CodeInstruction(OpCodes.Ldarg_1), // car
-                new CodeInstruction(OpCodes.Ldnull),
-                new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(UnityEngine.Object), "op_Inequality")),
-                new CodeInstruction(OpCodes.Brfalse_S, endLabel),
-                new CodeInstruction(OpCodes.Ldarg_1),
-                new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(TrainCar), "IsLoco")),
-                new CodeInstruction(OpCodes.Brfalse_S, endLabel)
-            });
-            return insts;
+            if (car == __instance && __instance.interiorPrefab != null)
+            {
+                carsWithLoadedInteriors.Remove(car);
+                carsWithLoadedInteriors.Add(car);
+                Main.DebugLog(() => $"carsWithLoadedInteriors={string.Join(",", carsWithLoadedInteriors.Select(car => car.ID))}");
+                var excessInteriorCount = carsWithLoadedInteriors.Count - Main.settings.maxInteriors;
+                if (excessInteriorCount > 0)
+                {
+                    for (int i = 0; i < excessInteriorCount; i++)
+                    {
+                        var carToUnload = carsWithLoadedInteriors[i];
+                        Main.DebugLog(() => $"Unloading interior for {carToUnload.ID}");
+                        carToUnload.UnloadInterior();
+                    }
+                    carsWithLoadedInteriors.RemoveRange(0, excessInteriorCount);
+                }
+                if (!__instance.IsInteriorLoaded)
+                    __instance.LoadInterior();
+            }
+            return false;
         }
     }
 }
