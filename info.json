@@ -2,7 +2,7 @@
   "Id": "HoldTheDoor",
   "DisplayName": "Hold the Door!",
   "Author": "Zeibach",
-  "Version": "1.1.0",
+  "Version": "1.1.1",
   "AssemblyName": "HoldTheDoor.dll",
   "EntryMethod": "DvMod.HoldTheDoor.Main.Load",
   "HomePage": "https://www.nexusmods.com/derailvalley/mods/207/",
