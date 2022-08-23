@@ -91,6 +91,8 @@ namespace DvMod.HoldTheDoor
         {
             public static void Postfix(TrainCar __instance)
             {
+                if (__instance.interiorPrefab == null || __instance.keepInteriorLoaded)
+                    return;
                 carsWithLoadedInteriors.Remove(__instance);
                 carsWithLoadedInteriors.Add(__instance);
                 Main.DebugLog(() => $"carsWithLoadedInteriors={string.Join(",", carsWithLoadedInteriors.Select(car => car.ID))}");
